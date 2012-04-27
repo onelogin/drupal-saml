@@ -1,0 +1,15 @@
+name = OneLogin SAML
+description = This SAML plugin eliminates passwords and allows you to authenticate Drupal users against your existing Active Directory or LDAP server as well increase security using YubiKeys or VeriSign VIP Access via OneLogin. OneLogin is pre-integrated with thousands of apps and handles all of your SSO needs in the cloud and behind the firewall.
+package = Authentication
+core = 7.x
+files[] = consume.php
+files[] = index.php
+files[] = settings.php
+files[] = lib/onelogin/saml.php
+files[] = lib/onelogin/saml/authrequest.php
+files[] = lib/onelogin/saml/response.php
+files[] = lib/onelogin/saml/settings.php
+files[] = lib/onelogin/saml/xmlsec.php
+files[] = lib/xmlseclibs/xmlseclibs.php
+configure = admin/config/saml_cert
+
