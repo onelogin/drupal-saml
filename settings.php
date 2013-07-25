@@ -13,8 +13,8 @@
 
     $settings                           = new Settings();
     // when using Service Provider Initiated SSO (starting at index.php), this URL asks the IdP to authenticate the user. 
-    $settings->idp_sso_target_url       = variable_get('onelogin_saml_login_url'); //"https://app.onelogin.com/saml/signon/6171";
+    $settings->idp_sso_target_url       = variable_get('onelogin_saml_login_url', 'PASTE THE SAML LOGIN URL HERE'); //"https://app.onelogin.com/saml/signon/6171";
     // the certificate for the users account in the IdP
-    $settings->x509certificate          = variable_get('onelogin_saml_cert');
+    $settings->x509certificate          = variable_get('onelogin_saml_cert', 'PASTE THE SAML CERT FROM ONELOGIN HERE');
     return $settings;
   }

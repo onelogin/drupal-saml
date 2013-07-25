@@ -15,7 +15,7 @@ require_once 'consume.php';
 function onelogin_saml_help($path, $arg) {
    switch ($path) {
      case "admin/help#onelogin_saml":
-       return '<p>'.  t("Allow signing to your Drupal site via OneLogin SAML technology") .'</p>';
+       return '<p>'.  t("Allow signing into your Drupal site via OneLogin SAML technology") .'</p>';
        break;
    }
 }
@@ -26,7 +26,7 @@ function onelogin_saml_help($path, $arg) {
 function onelogin_saml_menu(){
   $items = array();
 
-  $items['admin/config/saml_cert'] = array(
+  $items['admin/config/onelogin_saml_cert'] = array(
     'title' => 'Configure OneLogin SAML',
     'description' => 'Configuration of OneLogin SAML',
     'page callback' => 'drupal_get_form',
@@ -38,7 +38,7 @@ function onelogin_saml_menu(){
   $items['onelogin_saml/consumer'] = array(
     'title' => 'SAML Consumer',
     'page callback' => 'onelogin_saml_consume',
-    'access callback' => array(1),
+    'access callback' => true,
     'type' => MENU_CALLBACK
   );
 
@@ -63,7 +63,7 @@ function onelogin_saml_cert_form() {
     '#type' => 'textfield',
     '#title' => t('SAML Login URL'),
     '#default_value' => variable_get('onelogin_saml_login_url', ''),
-    '#description' => t('You can find this url by editting your Drupal Application.'),
+    '#description' => t('You can find this url by editting your Drupal Application in OneLogin.'),
     '#required' => TRUE
   );
 
@@ -78,6 +78,10 @@ function onelogin_saml_permission(){
     'config saml' => array(
       'title' => t('Configure SAML Authentication'),
       'restricted' => true
+    ),
+    'saml consumer' => array(
+      'title' => t('SAML Consumer'),
+      'restricted' => false
     )
   );
 }

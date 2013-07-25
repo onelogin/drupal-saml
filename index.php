@@ -1,6 +1,4 @@
 <?php
-  error_reporting(E_ALL); 
-
   require 'settings.php';
 
   require 'lib/onelogin/saml.php';

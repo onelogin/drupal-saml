@@ -1,12 +1,12 @@
 <?php
 function onelogin_saml_consume(){
-  if (drupal_session_started()){
-    global $user;
+  global $user;
+  if ($user->uid){
     drupal_set_message("User ". $user->mail ." already logged in.", 'status', FALSE);
   }
   else if (isset($_POST['SAMLResponse']) && !empty($_POST['SAMLResponse'])){
-    require_once DRUPAL_ROOT . '/sites/all/modules/onelogin_saml/settings.php';
-    require_once DRUPAL_ROOT . '/sites/all/modules/onelogin_saml/lib/onelogin/saml.php';
+    require_once dirname(__FILE__) . '/settings.php';
+    require_once dirname(__FILE__) . '/lib/onelogin/saml.php';
 
     $samlresponse = new SamlResponse($_POST['SAMLResponse']);
     $samlresponse->user_settings = get_user_settings();
@@ -15,6 +15,7 @@ function onelogin_saml_consume(){
       onelogin_saml_auth($samlresponse);
     else
       drupal_set_message("Invalid SAML response.", 'error', FALSE);
+    var_dump($samlresponse);
   }
   else
     drupal_set_message("No Saml Response found.", 'error', FALSE);
@@ -22,7 +23,8 @@ function onelogin_saml_consume(){
 }
 
 function onelogin_saml_auth($samlresponse){
-  $user = db_query("SELECT * FROM {users} WHERE mail = :email AND status = 1", array(':email' => $samlresponse->get_nameid()))->fetchObject();
+  global $user;
+  $user = user_load(array('mail' => $samlresponse->get_nameid()));
   if ($user){
     drupal_set_message("Welcome ".$samlresponse->get_nameid(), 'status', FALSE);
     $form_state['uid'] = $user->uid;
