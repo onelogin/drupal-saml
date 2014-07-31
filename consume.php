@@ -7,7 +7,7 @@ function onelogin_saml_consume(){
   else if (isset($_POST['SAMLResponse']) && !empty($_POST['SAMLResponse'])){
     $module_path = DRUPAL_ROOT . '/' . drupal_get_path('module', 'onelogin_saml') . '/';
     require_once $module_path.'settings.php';
-    require_once $module_path.'lib/onelogin/saml.php'
+    require_once $module_path.'lib/onelogin/saml.php';
 
     $samlresponse = new SamlResponse($_POST['SAMLResponse']);
     $samlresponse->user_settings = get_user_settings();
