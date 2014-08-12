@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @file
+ * the install file for the onelogin_saml module
+ */
+
+/**
+ * Implements hook_install().
+ */
+function onelogin_saml_install() {
+  // User won't be able to change his username, prevent possible problems
+  user_role_revoke_permissions(DRUPAL_AUTHENTICATED_RID, array('change own username'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function onelogin_saml_uninstall() {
+  // Restore the original user registration directive.
+  $original = variable_get('simplesamlphp_auth_user_register_original', 1);
+  variable_set('user_register', $original);
+  variable_del('simplesamlphp_auth_user_register_original');
+
+  // Remove the created system variables.
+  variable_del('saml_idp_entityid');
+  variable_del('saml_idp_sso');
+  variable_del('saml_idp_slo');
+  variable_del('saml_idp_x509cert');
+  variable_del('saml_options_autocreate');
+  variable_del('saml_options_syncrole');
+  variable_del('saml_options_saml_link');
+  variable_del('saml_options_slo');
+  variable_del('saml_options_account_matcher');
+  variable_del('saml_attr_mapping_username');
+  variable_del('saml_attr_mapping_email');
+  variable_del('saml_attr_mapping_role');
+  variable_del('saml_role_mapping_administrator');
+  variable_del('saml_role_mapping_authenticated');
+  variable_del('saml_create_new_account');
+  variable_del('saml_request_new_password');
+  variable_del('saml_advanced_settings_debug');
+  variable_del('saml_advanced_settings_strict_mode');
+  variable_del('saml_advanced_settings_sp_entity_id');
+  variable_del('saml_advanced_settings_nameid_encrypted');
+  variable_del('saml_advanced_settings_authn_request_signed');
+  variable_del('saml_advanced_settings_logout_request_signed');
+  variable_del('saml_advanced_settings_logout_response_signed');
+  variable_del('saml_advanced_settings_want_message_signed');
+  variable_del('saml_advanced_settings_want_assertion_signed');
+  variable_del('saml_advanced_settings_want_assertion_encrypted');
+  variable_del('saml_advanced_settings_sp_x509cert');
+  variable_del('saml_advanced_settings_sp_privatekey');
+}
