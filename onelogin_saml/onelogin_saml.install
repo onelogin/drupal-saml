@@ -17,18 +17,13 @@ function onelogin_saml_install() {
  * Implements hook_uninstall().
  */
 function onelogin_saml_uninstall() {
-  // Restore the original user registration directive.
-  $original = variable_get('simplesamlphp_auth_user_register_original', 1);
-  variable_set('user_register', $original);
-  variable_del('simplesamlphp_auth_user_register_original');
-
   // Remove the created system variables.
   variable_del('saml_idp_entityid');
   variable_del('saml_idp_sso');
   variable_del('saml_idp_slo');
   variable_del('saml_idp_x509cert');
   variable_del('saml_options_autocreate');
-  variable_del('saml_options_syncrole');
+  variable_del('saml_options_syncroles');
   variable_del('saml_options_saml_link');
   variable_del('saml_options_slo');
   variable_del('saml_options_account_matcher');
@@ -36,7 +31,6 @@ function onelogin_saml_uninstall() {
   variable_del('saml_attr_mapping_email');
   variable_del('saml_attr_mapping_role');
   variable_del('saml_role_mapping_administrator');
-  variable_del('saml_role_mapping_authenticated');
   variable_del('saml_create_new_account');
   variable_del('saml_request_new_password');
   variable_del('saml_advanced_settings_debug');

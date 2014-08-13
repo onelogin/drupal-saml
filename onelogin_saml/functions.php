@@ -15,7 +15,6 @@ function onelogin_saml_slo() {
 
   setcookie('drupal_saml_login', 0, time() + 360000);
   $auth = initialize_saml();
-  //$auth->logout(url('user/logout', array('absolute' => FALSE)));
   $auth->logout(url('', array('relative' => TRUE)));
   exit();
 }
@@ -94,52 +93,49 @@ function onelogin_saml_auth($auth) {
   }
 
   $autocreate = variable_get('saml_options_autocreate', FALSE);
-  $syncrole = variable_get('saml_options_syncrole', FALSE);
+  $syncroles = variable_get('saml_options_syncroles', FALSE);
 
   $roles = array();
-  if ($syncrole) {
+  if ($syncroles) {
     // saml_attr_mapping_role
     $roleMapping = variable_get('saml_attr_mapping_role', '');
 
     if (!empty($roleMapping)) {
       $adminsRole = explode(',', variable_get('saml_role_mapping_administrator', ''));
-      $authRole = explode(',', variable_get('saml_role_mapping_authenticated'));
       // Add here your customRoleMapping directly
       // $customRole = array ('value1', $value2);
 
-      $role = 0;
+      $administrator = user_role_load_by_name('administrator');
+      $adminWeight = $administrator->rid;
+
+      $roleWeight = 0;
       foreach ($attrs[$roleMapping] as $samlRole) {
         $samlRole = trim($samlRole);
         if (empty($samlRole)) {
           break;  
         }
-        else if (in_array($samlRole, $adminsRole)) {
-          if ($role < 10) {
-            $role = 10;
-          }
-          break;
-    // } else if (in_array($samlRole, $customRole)) {
+    //  else if (in_array($samlRole, $customRole)) {
     //    if ($role < 5) {
     //      $role = 5;
     //    }
-        } else if (in_array($samlRole, $authRole)) {
-          if ($role < 1) {
-            $role = 1;
+    //  }
+        else if (in_array($samlRole, $adminsRole)) {
+          if ($roleWeight < $adminWeight) {
+            $roleWeight = $adminWeight;
           }
           break;
         }
       }
-      switch ($role) {
-        case 10:
-          $roles = array(3 => 'administrator');
-          break;
-        case 1:
-          $roles = array(DRUPAL_AUTHENTICATED_RID => 'authenticated user');
-          break;
+      switch ($roleWeight) {
      // case 5:
      //   $roles = array(5 => 'customrole');
      //   break;
+        case $adminWeight:
+          $roles = array($adminWeight => 'administrator');
+          break;
+        case DRUPAL_AUTHENTICATED_RID: // default value => 2
         default:
+          $roles = array(DRUPAL_AUTHENTICATED_RID => 'authenticated user');
           break;
       }
     }
@@ -179,8 +175,11 @@ function onelogin_saml_auth($auth) {
     }
 
     try {
+      $user = user_save(NULL, $fields);
+      $GLOBALS['user'] = $user;
+      $form_state['uid'] = $user->uid;
+      user_login_finalize($form_state);
       setcookie('drupal_saml_login', 1, time() + 360000);
-      return user_save(NULL, $fields);
     }
     catch (Exception $e) {
       return FALSE;

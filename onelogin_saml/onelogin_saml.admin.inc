@@ -88,7 +88,7 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_options']['saml_options_syncrole'] = array(
+  $form['saml_options']['saml_options_syncroles'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Sync roles</strong>'),
     '#default_value' => variable_get('saml_options_syncroles', FALSE),
@@ -165,13 +165,6 @@ function onelogin_saml_form() {
     '#type' => 'textfield',
     '#title' => t('Administrator'),
     '#default_value' => variable_get('saml_role_mapping_administrator', ''),
-    '#required' => FALSE
-  );
-
-  $form['saml_role_mapping']['saml_role_mapping_authenticated'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Authenticated'),
-    '#default_value' => variable_get('saml_role_mapping_authenticated', ''),
     '#required' => FALSE
   );
 
