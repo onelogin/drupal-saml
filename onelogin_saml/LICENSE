@@ -1,3 +1,9 @@
+This Drupal SAML plugin is Dual licensed under the MIT and GPLv2 licenses.
+
+OneLogin common license for its open source code is MIT, but notice that
+Drupal requires the GPLv2 license in order to host the plugin.
+
+
 Copyright (c) 2010-2014, OneLogin, Inc.
 All rights reserved.
 
