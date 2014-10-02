@@ -223,7 +223,7 @@ function onelogin_saml_form() {
   $form['saml_advanced_settings']['saml_advanced_settings_sp_entity_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Service Provider Entity Id'),
-    '#default_value' => variable_get('saml_advanced_settings_sp_entity_id', ''),
+    '#default_value' => variable_get('saml_advanced_settings_sp_entity_id', 'php-saml'),
     '#description' => t('Set the Entity ID for the Service Provider. If not provided, \'php-saml\' will be used.'),
     '#required' => FALSE
   );
@@ -397,6 +397,8 @@ function search_admin_settings($form) {
 /**
  * Form validation handler for onelogin_saml_form().
  */
-//function onelogin_saml_form_validate($form, &$form_state) {
-//  
-//}
+function onelogin_saml_form_validate($form, &$form_state) {
+  if (empty($form_state['values']['saml_advanced_settings_sp_entity_id'])) {
+    $form_state['values']['saml_advanced_settings_sp_entity_id'] = 'php-saml';
+  }
+}
