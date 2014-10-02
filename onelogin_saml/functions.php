@@ -21,7 +21,7 @@ function onelogin_saml_slo() {
 
 function onelogin_saml_acs() {
 
-  if (drupal_session_started()){
+  if (user_is_logged_in() && !user_is_anonymous()) {
     global $user;
     drupal_set_message("User ". $user->mail ." already logged in.", 'status', FALSE);
   }
