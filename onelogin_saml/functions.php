@@ -82,7 +82,7 @@ function onelogin_saml_auth($auth) {
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'user')
           ->propertyCondition('status', 1)
-          ->propertyCondition('usermail', $usermail);
+          ->propertyCondition('name', $username);
   }
   else {
     // Query for active users given an e-mail address.

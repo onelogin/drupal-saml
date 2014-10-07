@@ -134,7 +134,8 @@ function onelogin_saml_form() {
     '#type' => 'textfield',
     '#title' => t('Username'),
     '#default_value' => variable_get('saml_attr_mapping_username', ''),
-    '#required' => TRUE
+    '#required' => TRUE,
+    '#description' => t("Be sure that usernames at the IdP don't contain punctuation (periods, hyphens, apostrophes, and underscores are allowed)")
   );
 
   $form['saml_attr_mapping']['saml_attr_mapping_email'] = array(
