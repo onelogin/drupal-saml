@@ -24,6 +24,7 @@ function onelogin_saml_acs() {
   if (user_is_logged_in() && !user_is_anonymous()) {
     global $user;
     drupal_set_message("User ". $user->mail ." already logged in.", 'status', FALSE);
+    drupal_goto('');
   }
   else if (isset($_POST['SAMLResponse']) && !empty($_POST['SAMLResponse'])){
     $auth = initialize_saml();
@@ -33,13 +34,20 @@ function onelogin_saml_acs() {
     $errors = $auth->getErrors();
     if (!empty($errors)) {
       drupal_set_message("There was at least one error processing the SAML Response".implode("<br>", $errors), 'error', FALSE);
+      drupal_goto('');
     }
     onelogin_saml_auth($auth);
   }
   else {
     drupal_set_message("No SAML Response found.", 'error', FALSE);
+    drupal_goto('');
   }
-  drupal_goto('');
+
+  if (isset($_POST['RelayState'])) {
+    drupal_goto($_POST['RelayState']);  
+  } else {
+    drupal_goto('');
+  }
 }
 
 function onelogin_saml_sls() {
@@ -187,8 +195,8 @@ function onelogin_saml_auth($auth) {
   }
   else {
     drupal_set_message("User '".($matcher == 'username'? $username : $email). "' not found.", 'error', FALSE);
+    drupal_goto();
   }
-  drupal_goto();
 }
 
 function initialize_saml() {
@@ -200,7 +208,7 @@ function initialize_saml() {
     $auth = new Onelogin_Saml2_Auth($settings);
   } catch (Exception $e) {
     drupal_set_message("The Onelogin SSO/SAML plugin is not correctly configured:".'<br>'.$e->getMessage(), 'error', FALSE);
-    drupal_goto();    
+    drupal_goto();
   }
 
   return $auth;
