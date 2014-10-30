@@ -6,7 +6,7 @@
     "plugin": {
         "app": "drupal",
         "name": "onelogin-saml",
-        "version": "2.1.0",
-        "released": "01/10/2014"
+        "version": "2.1.1",
+        "released": "30/10/2014"
     }
 }
