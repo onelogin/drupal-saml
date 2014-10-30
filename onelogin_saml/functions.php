@@ -2,7 +2,11 @@
 
 function onelogin_saml_sso() {
   $auth = initialize_saml();
-  if (isset($_SERVER['REQUEST_URI'])) {
+  if (isset($_GET['destination'])) {
+    $auth->login($_GET['destination']);
+  } else if (isset($_GET['returnTo'])) {
+    $auth->login($_GET['returnTo']);
+  } else if (isset($_SERVER['REQUEST_URI'])) {
     $auth->login($_SERVER['REQUEST_URI']);
   } else {
     $auth->login();
