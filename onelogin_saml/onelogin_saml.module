@@ -137,3 +137,60 @@ function _onelogin_saml_user_login_form_alter(&$form, &$form_state) {
     }
   }
 }
+
+/**
+ * Implements hook_requirements().
+ */
+function onelogin_saml_requirements($phase) {
+  if ($phase != 'runtime') {
+    return;
+  }
+  $requirements = array();
+  // Check for the PHP OpenSSL library.
+  if (!function_exists('openssl_random_pseudo_bytes')) {
+    $requirements['onelogin_saml_openssl'] = array(
+      'value' => t('Not installed'),
+      'severity' => REQUIREMENT_ERROR,
+      'description' => t('OneLogin SAML PHP Toolkit requires the use of the <a href="@openssl">Open SSL</a> to handling x509 certificates. see <a href="@php-saml">PHP SAML Toolkit</a> for dependency updates.', array('@openssl' => 'http://php.net/manual/en/book.openssl.php', '@php-saml' => 'https://github.com/onelogin/php-saml#dependences')),
+    );
+  }
+  else {
+    $requirements['onelogin_saml_openssl'] = array(
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    );
+  }
+  // Check for the PHP Mcrypt library.
+  if (!function_exists('mcrypt_module_open')) {
+    $requirements['onelogin_saml_mcrypt'] = array(
+      'value' => t('Not all features enabled'),
+      'severity' => REQUIREMENT_WARNING,
+      'description' => t('Install <a href="@openssl">Mcrypt Library</a> and its php driver if you gonna handle encrypted data. (nameID, assertions).', array('@mcrypt' => 'http://php.net/manual/en/book.mcrypt.php')),
+    );
+  }
+  else {
+    $requirements['onelogin_saml_mcrypt'] = array(
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    );
+  }
+  // Check for the Gettext library.
+  if (!function_exists('gettext')) {
+    $requirements['onelogin_saml_gettext'] = array(
+      'value' => t('Not all features enabled.'),
+      'severity' => REQUIREMENT_WARNING,
+      'description' => t('Install <a href="@gettext">Gettext Library</a> and its php driver. It handles translations.', array('@gettext' => 'http://php.net/manual/en/book.gettext.php')),
+    );
+  }
+  else {
+    $requirements['onelogin_saml_gettext'] = array(
+      'value' => t('Installed'),
+      'severity' => REQUIREMENT_OK,
+    );
+  }
+  $requirements['onelogin_saml_openssl']['title'] = t('OneLogin SAML, OpenSSL Library');
+  $requirements['onelogin_saml_mcrypt']['title'] = t('OneLogin SAML, Mcrypt Library');
+  $requirements['onelogin_saml_gettext']['title'] = t('OneLogin SAML, Gettext Library');
+  return $requirements;
+}
+
