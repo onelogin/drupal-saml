@@ -112,8 +112,12 @@ function _onelogin_saml_user_login_form_alter(&$form, &$form_state) {
   if ($showSamlLink) {
     // Add a "Log in using SAML" link to the user-login form.
     $items = array();
+    $options = array(
+      'query' => drupal_get_destination(),
+      'relative' => TRUE
+    );
     $items[] = array(
-      'data' => l(t('Log in using SAML'), url('onelogin_saml/sso', array('relative' => TRUE)), array('external' => TRUE)), 
+      'data' => l(t('Log in using SAML'), url('onelogin_saml/sso', $options), array('external' => TRUE)), 
       'class' => array('saml-link'),
     );
 
