@@ -204,9 +204,8 @@ function onelogin_saml_auth($auth) {
 }
 
 function initialize_saml() {
-  $module_path = DRUPAL_ROOT . '/' . drupal_get_path('module', 'onelogin_saml') . '/';
-  require_once $module_path.'_toolkit_loader.php';
-  require_once $module_path.'settings.php';
+  require_once '_toolkit_loader.php';
+  require_once 'settings.php';
 
   try {
     $auth = new Onelogin_Saml2_Auth($settings);
