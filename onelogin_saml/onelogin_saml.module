@@ -73,6 +73,22 @@ function onelogin_saml_permission(){
     'config saml' => array(
       'title' => t('Configure SAML Authentication'),
       'restricted' => TRUE
+    )
+  );
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function onelogin_saml_user_logout($account) {
+  $enable_slo = variable_get('saml_options_slo', FALSE);
+  $made_sso_login = isset($_COOKIE['drupal_saml_login']) && $_COOKIE['drupal_saml_login'];
+  if ($enable_slo && $made_sso_login) {
+    onelogin_saml_slo();
+  }
+  else if ($made_sso_login) {
+    setcookie('drupal_saml_login', 0, time() + 3600);
+  }
 }
 
 
