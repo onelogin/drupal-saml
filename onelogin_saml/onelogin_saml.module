@@ -37,28 +37,28 @@ function onelogin_saml_menu(){
   $items['onelogin_saml/sso'] = array(
     'title' => 'SAML SP-Iniiated SSO',
     'page callback' => 'onelogin_saml_sso',
-    'access callback' => array(1),
+    'access callback' => TRUE,
     'type' => MENU_CALLBACK
   );
 
   $items['onelogin_saml/acs'] = array(
     'title' => 'SAML Assertion Consumer Service',
     'page callback' => 'onelogin_saml_acs',
-    'access callback' => array(1),
+    'access callback' => TRUE,
     'type' => MENU_CALLBACK
   );
 
   $items['onelogin_saml/sls'] = array(
     'title' => 'SAML Service Logout Service',
     'page callback' => 'onelogin_saml_sls',
-    'access callback' => array(1),
+    'access callback' => TRUE,
     'type' => MENU_CALLBACK
   );
 
   $items['onelogin_saml/metadata'] = array(
     'title' => 'SAML SP Metadata',
     'page callback' => 'onelogin_saml_metadata',
-    'access callback' => array(1),
+    'access callback' => TRUE,
     'type' => MENU_CALLBACK
   );
 
@@ -72,23 +72,7 @@ function onelogin_saml_permission(){
   return array(
     'config saml' => array(
       'title' => t('Configure SAML Authentication'),
-      'restricted' => true
-    )
-  );
-}
-
-/**
- * Implements hook_user_logout().
- */
-function onelogin_saml_user_logout($account) {
-  $enable_slo = variable_get('saml_options_slo', FALSE);
-  $made_sso_login = isset($_COOKIE['drupal_saml_login']) && $_COOKIE['drupal_saml_login'];
-  if ($enable_slo && $made_sso_login) {
-    onelogin_saml_slo();
-  }
-  else if ($made_sso_login) {
-    setcookie('drupal_saml_login', 0, time() + 3600);
-  }
+      'restricted' => TRUE
 }
 
 
