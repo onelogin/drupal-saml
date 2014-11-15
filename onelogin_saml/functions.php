@@ -3,11 +3,12 @@
 function onelogin_saml_sso() {
   $auth = initialize_saml();
   if (isset($_GET['destination'])) {
-    $auth->login($_GET['destination']);
+    $target = $_GET['destination'];
   } else if (isset($_GET['returnTo'])) {
-    $auth->login($_GET['returnTo']);
-//  } else if (isset($_SERVER['REQUEST_URI'])) {
-//    $auth->login($_SERVER['REQUEST_URI']);
+    $target = $_GET['returnTo'];
+  }
+  if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE) {
+    $auth->login($target);
   } else {
     $auth->login();
   }
@@ -19,7 +20,7 @@ function onelogin_saml_slo() {
 
   setcookie('drupal_saml_login', 0, time() + 360000);
   $auth = initialize_saml();
-  $auth->logout(url('', array('relative' => TRUE)));
+  $auth->logout();
   exit();
 }
 
@@ -48,7 +49,7 @@ function onelogin_saml_acs() {
   }
 
   if (isset($_POST['RelayState'])) {
-    drupal_goto($_POST['RelayState']);  
+    drupal_goto($_POST['RelayState']);
   } else {
     drupal_goto('');
   }
@@ -57,7 +58,7 @@ function onelogin_saml_acs() {
 function onelogin_saml_sls() {
   $auth = initialize_saml();
   $auth->processSLO();  
-  drupal_goto();
+  drupal_goto('');
 }
 function onelogin_saml_metadata() {
   $auth = initialize_saml();
