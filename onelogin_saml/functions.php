@@ -113,7 +113,7 @@ function onelogin_saml_auth($auth) {
     // saml_attr_mapping_role
     $roleMapping = variable_get('saml_attr_mapping_role', '');
 
-    if (!empty($roleMapping)) {
+    if (!empty($roleMapping) && isset($attrs[$roleMapping]) && !empty($attrs[$roleMapping])) {
       $adminsRole = explode(',', variable_get('saml_role_mapping_administrator', ''));
       // Add here your customRoleMapping directly
       // $customRole = array ('value1', $value2);
