@@ -136,10 +136,10 @@ function onelogin_saml_auth($auth) {
           }
           break;
         } else {
-				  if ($loadedRole = user_role_load_by_name($samlRole)) {
-						$roles[$loadedRole->rid] = $loadedRole->name;
-					}
-				}
+          if ($loadedRole = user_role_load_by_name($samlRole)) {
+            $roles[$loadedRole->rid] = $loadedRole->name;
+          }
+        }
       }
       switch ($roleWeight) {
      // case 5:
