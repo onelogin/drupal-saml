@@ -65,7 +65,6 @@ function onelogin_saml_metadata() {
   $auth = new Onelogin_Saml2_Auth($settings);
   $settings = $auth->getSettings();
   $metadata = $settings->getSPMetadata();
-  
   header('Content-Type: text/xml');
   echo $metadata;
   exit();
@@ -73,7 +72,6 @@ function onelogin_saml_metadata() {
 
 function onelogin_saml_auth($auth) {
   $attrs = $auth->getAttributes();
-
   if (empty($attrs)) {
     $email = $auth->getNameId();
     $username = str_replace('@', '.', $email);
@@ -137,18 +135,22 @@ function onelogin_saml_auth($auth) {
             $roleWeight = $adminWeight;
           }
           break;
-        }
+        } else {
+				  if ($loadedRole = user_role_load_by_name($samlRole)) {
+						$roles[$loadedRole->rid] = $loadedRole->name;
+					}
+				}
       }
       switch ($roleWeight) {
      // case 5:
      //   $roles = array(5 => 'customrole');
      //   break;
         case $adminWeight:
-          $roles = array($adminWeight => 'administrator');
+          $roles[$adminWeight] = 'administrator';
           break;
         case DRUPAL_AUTHENTICATED_RID: // default value => 2
         default:
-          $roles = array(DRUPAL_AUTHENTICATED_RID => 'authenticated user');
+          $roles[DRUPAL_AUTHENTICATED_RID] = 'authenticated user';
           break;
       }
     }
