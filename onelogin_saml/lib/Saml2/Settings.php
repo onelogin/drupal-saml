@@ -295,6 +295,9 @@ class OneLogin_Saml2_Settings
         if (!isset($this->_security['nameIdEncrypted'])) {
             $this->_security['nameIdEncrypted'] = false;
         }
+        if (!isset($this->_security['requestedAuthnContext'])) {
+            $this->_security['requestedAuthnContext'] = true;
+        }
 
         // sign provided
         if (!isset($this->_security['authnRequestsSigned'])) {
@@ -325,6 +328,13 @@ class OneLogin_Saml2_Settings
         if (!isset($this->_security['wantNameIdEncrypted'])) {
             $this->_security['wantNameIdEncrypted'] = false;
         }
+
+        // XML validation
+        if (!isset($this->_security['wantXMLValidation'])) {
+            $this->_security['wantXMLValidation'] = true;
+        }
+
+        // Certificates / Private key /Fingerprint
 
         if (!isset($this->_idp['x509cert'])) {
             $this->_idp['x509cert'] = '';
@@ -695,6 +705,8 @@ class OneLogin_Saml2_Settings
             }
         }
 
+        // TODO: Support Metadata Sign Validation
+
         return $errors;
     }
 
@@ -768,5 +780,16 @@ class OneLogin_Saml2_Settings
     public function isDebugActive()
     {
         return $this->_debug;
+    }
+
+    /**
+     * Sets the IdP certificate.
+     *
+     * @param string $value IdP certificate
+     */
+    public function setIdPCert($cert)
+    {
+      $this->_idp['x509cert'] = $cert;
+      $this->formatIdPCert();
     }
 }
