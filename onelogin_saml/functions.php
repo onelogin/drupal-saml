@@ -18,7 +18,7 @@ function onelogin_saml_sso() {
 function onelogin_saml_slo() {
   global $cookie_domain, $user;
 
-  setcookie('drupal_saml_login', 0, time() + 360000);
+  session_destroy();
   $auth = initialize_saml();
   $auth->logout();
   exit();
@@ -57,9 +57,16 @@ function onelogin_saml_acs() {
 
 function onelogin_saml_sls() {
   $auth = initialize_saml();
-  $auth->processSLO();  
+  $auth->processSLO();
+  if (empty($auth->getErrors())) {
+      session_destroy();
+  }
+  else {
+    drupal_set_message("SLS endpoint found an error.".$auth->getLastErrorReason(), 'error', FALSE);
+  }
   drupal_goto('');
 }
+
 function onelogin_saml_metadata() {
   $auth = initialize_saml();
   $auth = new Onelogin_Saml2_Auth($settings);
