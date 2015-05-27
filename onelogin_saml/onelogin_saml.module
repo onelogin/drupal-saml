@@ -24,6 +24,15 @@ function onelogin_saml_help($path, $arg) {
 function onelogin_saml_menu(){
   $items = array();
 
+  $items['admin/config/people/onelogin_saml'] = array(
+    'title' => 'Configure OneLogin SAML',
+    'description' => 'This SAML plugin eliminates passwords and allows you to authenticate Drupal users against your existing Active Directory or LDAP server as well increase security using YubiKeys or VeriSign VIP Access via OneLogin. OneLogin is pre-integrated with thousands of apps and handles all of your SSO needs in the cloud and behind the firewall.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('onelogin_saml_form'),
+    'access arguments' => array('config saml'),
+    'file' => 'onelogin_saml.admin.inc',
+  );
+
   $items['admin/config/onelogin_saml'] = array(
     'title' => 'Configure OneLogin SAML',
     'description' => 'Configuration of OneLogin SAML',

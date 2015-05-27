@@ -71,6 +71,9 @@ function onelogin_saml_metadata() {
 }
 
 function onelogin_saml_auth($auth) {
+  $username = '';
+  $email = '';
+
   $attrs = $auth->getAttributes();
   if (empty($attrs)) {
     $email = $auth->getNameId();
@@ -89,6 +92,11 @@ function onelogin_saml_auth($auth) {
 
   $matcher = variable_get('saml_options_account_matcher');
   if ($matcher == 'username') {
+    if (empty($username)) {
+      drupal_set_message("Username value not found on the SAML Response. Username was selected as the account matcher field. Review at the settings the username mapping and be sure that the IdP provides this value", 'error', FALSE);
+      drupal_goto();
+    }
+
     // Query for active users given an usermail.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'user')
@@ -96,6 +104,11 @@ function onelogin_saml_auth($auth) {
           ->propertyCondition('name', $username);
   }
   else {
+    if (empty($email)) {
+      drupal_set_message("Email value not found on the SAML Response. Email was selected as the account matcher field. Review at the settings the username mapping and be sure that the IdP provides this value", 'error', FALSE);
+      drupal_goto();
+    }
+
     // Query for active users given an e-mail address.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'user')
@@ -183,6 +196,7 @@ function onelogin_saml_auth($auth) {
       'pass' => user_password(16),
       'status' => 1,
       'init' => $email,
+      'timezone' => date_default_timezone_get()
     );
 
     if (!empty($roles)) {
