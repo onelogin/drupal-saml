@@ -58,11 +58,13 @@ function onelogin_saml_acs() {
 function onelogin_saml_sls() {
   $auth = initialize_saml();
   $auth->processSLO();
-  if (empty($auth->getErrors())) {
+  $errors = $auth->getErrors();
+  if (empty($errors)) {
       session_destroy();
   }
   else {
-    drupal_set_message("SLS endpoint found an error.".$auth->getLastErrorReason(), 'error', FALSE);
+    $reason = $auth->getLastErrorReason();
+    drupal_set_message("SLS endpoint found an error.".$reason, 'error', FALSE);
   }
   
   if (isset($_GET ['destination']) && strpos($_GET ['destination'], 'user/logout') !== FALSE) {
