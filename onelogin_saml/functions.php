@@ -220,7 +220,7 @@ function onelogin_saml_auth($auth) {
       }
     }
     user_login_finalize($form_state);
-    setcookie('drupal_saml_login', 1, time() + 360000);
+	user_cookie_save(array('drupal_saml_login'=>'1'));
 
   } else if ($autocreate) {
     $fields = array(
@@ -241,7 +241,7 @@ function onelogin_saml_auth($auth) {
       $GLOBALS['user'] = $user;
       $form_state['uid'] = $user->uid;
       user_login_finalize($form_state);
-      setcookie('drupal_saml_login', 1, time() + 360000);
+	  user_cookie_save(array('drupal_saml_login'=>'1'));
     }
     catch (Exception $e) {
       return FALSE;
