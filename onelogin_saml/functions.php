@@ -1,6 +1,11 @@
 <?php
 
 function onelogin_saml_sso() {
+  // If a user initiates a login while they are already logged in, simply send them to their profile.
+  if (user_is_logged_in() && !user_is_anonymous()) {
+	global $user;
+	drupal_goto('user/' . $user->uid);
+  }
   $auth = initialize_saml();
   if (isset($_GET['destination'])) {
     $target = $_GET['destination'];
