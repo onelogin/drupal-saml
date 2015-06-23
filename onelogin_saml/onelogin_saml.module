@@ -91,12 +91,12 @@ function onelogin_saml_permission(){
  */
 function onelogin_saml_user_logout($account) {
   $enable_slo = variable_get('saml_options_slo', FALSE);
-  $made_sso_login = isset($_COOKIE['drupal_saml_login']) && $_COOKIE['drupal_saml_login'];
+  $made_sso_login = isset($_COOKIE['Drupal_visitor_drupal_saml_login']) && $_COOKIE['Drupal_visitor_drupal_saml_login'];
   if ($enable_slo && $made_sso_login) {
     onelogin_saml_slo();
   }
-  else if ($made_sso_login) {
-    setcookie('drupal_saml_login', 0, time() + 3600);
+  if ($made_sso_login) {
+		setcookie('Drupal.visitor.drupal_saml_login', '', 1, '/');
   }
 }
 
