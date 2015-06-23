@@ -25,11 +25,11 @@ function onelogin_saml_slo() {
 }
 
 function onelogin_saml_acs() {
+  global $user;
 
+  // If a user initiates a login while they are already logged in, simply send them to their profile.
   if (user_is_logged_in() && !user_is_anonymous()) {
-    global $user;
-    drupal_set_message("User ". $user->mail ." already logged in.", 'status', FALSE);
-    drupal_goto('');
+	drupal_goto('user/' . $user->uid);
   }
   else if (isset($_POST['SAMLResponse']) && !empty($_POST['SAMLResponse'])){
     $auth = initialize_saml();
@@ -48,11 +48,7 @@ function onelogin_saml_acs() {
     drupal_goto('');
   }
 
-  if (isset($_POST['RelayState'])) {
-    drupal_goto($_POST['RelayState']);
-  } else {
-    drupal_goto('');
-  }
+  drupal_goto('user/' . $user->uid);
 }
 
 function onelogin_saml_sls() {
