@@ -88,49 +88,68 @@ function onelogin_saml_auth($auth) {
   $username = '';
   $email = '';
 
-  $attrs = $auth->getAttributes();
-  if (empty($attrs)) {
-    $email = $auth->getNameId();
-    $username = str_replace('@', '.', $email);
-  } else {
-    $usernameMapping = variable_get('saml_attr_mapping_username');
-    $mailMapping =  variable_get('saml_attr_mapping_email');
+  // Check the NameId. It is required by the SP regardless of the matcher that is chosen.
+  $nameId = $auth->getNameId();
 
-    if (!empty($usernameMapping) && isset($attrs[$usernameMapping]) && !empty($attrs[$usernameMapping][0])){
-      $username = $attrs[$usernameMapping][0];
-    }
-    if (!empty($mailMapping) && isset($attrs[$mailMapping])  && !empty($attrs[$mailMapping][0])){
-      $email = $attrs[$mailMapping][0];
-    }
+  if (empty($nameId)) {
+  	drupal_set_message("A NameId could not be found. Please supply a NameId in your SAML response.", 'error', FALSE);
+  	drupal_goto();	
   }
 
+  // Get variables from the module configuration.
   $matcher = variable_get('saml_options_account_matcher');
-  if ($matcher == 'username') {
-    if (empty($username)) {
-      drupal_set_message("Username value not found on the SAML Response. Username was selected as the account matcher field. Review at the settings the username mapping and be sure that the IdP provides this value", 'error', FALSE);
-      drupal_goto();
-    }
+  $autocreate = variable_get('saml_options_autocreate', FALSE);
+  $usernameFromEmail = variable_get('saml_options_username_from_email', FALSE);
+  $usernameMapping = variable_get('saml_attr_mapping_username');
+  $mailMapping = variable_get('saml_attr_mapping_email');
+	
+  // Get SAML attributes
+  $attrs = $auth->getAttributes();
 
-    // Query for active users given an usermail.
+  // If the configuration specifies username as the matcher:
+  if ($matcher == 0) {
+	$username = $nameId;
+
+    // Setup query for active user given the username.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'user')
           ->propertyCondition('status', 1)
           ->propertyCondition('name', $username);
-  }
-  else {
-    if (empty($email)) {
-      drupal_set_message("Email value not found on the SAML Response. Email was selected as the account matcher field. Review at the settings the username mapping and be sure that the IdP provides this value", 'error', FALSE);
-      drupal_goto();
-    }
+
+	// If auto-privisioning is enabled but there are no attributes, we need to stop.
+	if (empty($attrs) && $autocreate) {
+		drupal_set_message("Auto-provisioning accounts requires a username and email address. Please supply both in your SAML response.", 'error', FALSE);
+	    drupal_goto();
+
+	// If attributes exist, map them.
+	} elseif (!empty($attrs)) {
+		if (!empty($mailMapping) && isset($attrs[$mailMapping])  && !empty($attrs[$mailMapping][0])){
+	      $email = $attrs[$mailMapping][0];
+		}
+	}
+
+  // If the configuration specifies email as the matcher:
+  } elseif ($matcher == 1) {
+	$email = $nameId;
 
     // Query for active users given an e-mail address.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'user')
           ->propertyCondition('status', 1)
           ->propertyCondition('mail', $email);
+
+	// If the username_from_email option is selected, derive the username from the email address.
+	if (empty($attrs) && $usernameFromEmail) {
+  		$username = str_replace('@', '.', $email);
+
+		// If attributes exist, map them.
+	} elseif (!empty($attrs)) {
+    	if (!empty($usernameMapping) && isset($attrs[$usernameMapping]) && !empty($attrs[$usernameMapping][0])){
+      		$username = $attrs[$usernameMapping][0];
+		}
+	}
   }
 
-  $autocreate = variable_get('saml_options_autocreate', FALSE);
   $syncroles = variable_get('saml_options_syncroles', FALSE);
 
   $roles = array();

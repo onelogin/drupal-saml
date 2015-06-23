@@ -88,6 +88,14 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
+  $form['saml_options']['saml_options_username_from_email'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('<strong>Get username from email address</strong>'),
+    '#default_value' => variable_get('saml_options_username_from_email', FALSE),
+    '#description' => t('<p>Use everything in front of the @ in the email address as the username. This may be useful if you are only sending an email address in your SAML response, but you want to auto-provision accounts which requires a username and email address.</p>'),
+    '#required' => FALSE
+  );
+
   $form['saml_options']['saml_options_syncroles'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Sync roles</strong>'),
