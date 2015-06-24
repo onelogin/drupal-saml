@@ -54,11 +54,27 @@ function onelogin_saml_form() {
     '#required' => TRUE
   );
 
+  $form['saml_idp']['saml_options_slo'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('<strong>Single Log Out</strong>'),
+    '#default_value' => variable_get('saml_options_slo', FALSE),
+    '#description' => t('Enable SAML Single Log Out. SLO is complex functionality. The most common SLO implementation is based on front-channel (redirections). Sometimes if the SLO workflow fails, a user can be blocked in an unhandled view. Unless you have a strong grasp of SLO it is recommended that you leave it disabled. If enabled, enter the IdP\'s SLO target URL below.'),
+    '#required' => FALSE
+  );
+
   $form['saml_idp']['saml_idp_slo'] = array(
     '#type' => 'textfield',
     '#title' => t('Single Log Out Service Url'),
     '#default_value' => variable_get('saml_idp_slo', ''),
-    '#description' => t('SLO endpoint info of the IdP. URL target of the IdP where the SP will send the SLO Request. ("SLO Endpoint (HTTP)")'),
+    '#description' => t('URL target for the IdP where the SP will send the SLO Request. ("SLO Endpoint (HTTP)")'),
+    '#required' => FALSE
+  );
+
+  $form['saml_idp']['saml_logout_link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Logout Redirect'),
+    '#default_value' => variable_get('saml_logout_link', ''),
+    '#description' => t('If Single Log Out is not used, you can choose to redirect a SAML user after they are logged out of Drupal. Some use this to redirect to an IdP logout page, a Central Authentication Service (CAS) logout page, or a custom page warning the user to close their browser to end their SSO session. This only affects users who have logged in via SAML.'),
     '#required' => FALSE
   );
 
@@ -109,14 +125,6 @@ function onelogin_saml_form() {
     '#title' => t('<strong>SAML link</strong>'),
     '#default_value' => variable_get('saml_options_saml_link', FALSE),
     '#description' => t('<p>Show or not a SAML link to execute a SP-initiated SSO in the login page</p>'),
-    '#required' => FALSE
-  );
-
-  $form['saml_options']['saml_options_slo'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Single Log Out</strong>'),
-    '#default_value' => variable_get('saml_options_slo', FALSE),
-    '#description' => t('Enable/disable Single Log Out. SLO is a complex functionality, the most common SLO implementation is based on front-channel (redirections), sometimes if the SLO workflow fails a user can be blocked in an unhandled view. If the admin does not controls the set of apps involved in the SLO process maybe is better to disable this functionality due could carry more problems than benefits.'),
     '#required' => FALSE
   );
 
