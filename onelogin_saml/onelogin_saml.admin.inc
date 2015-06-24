@@ -217,15 +217,11 @@ function onelogin_saml_form() {
     '#title' => t('ADVANCED SETTINGS')
   );
 
-  $form['saml_advanced_settings']['info'] = array(
-    '#markup' => t('<p>Handle some other parameters related to customizations and security issues.<br>If sign/encryption is enabled, then x509 cert and private key for the SP must be provided. There are 2 ways:</p><p>1. Store them as files named sp.key and sp.crt on the \'certs\' folder of the plugin. (be sure that the folder is protected and not exposed to internet)<br>2. Store them at the database, filling the corresponding textareas. (take care of security issues)</p>')
-  );
-
   $form['saml_advanced_settings']['saml_advanced_settings_debug'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Debug Mode</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_debug', FALSE),
-    '#description' => t('Enable it when your are debugging the SAML workflow. Errors and Warnigs will be showed.'),
+    '#description' => t('Enable it when you are debugging the SAML workflow. Errors and Warnigs will be showed.'),
     '#required' => FALSE
   );
 
@@ -233,7 +229,7 @@ function onelogin_saml_form() {
     '#type' => 'checkbox',
     '#title' => t('<strong>Strict Mode</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_strict_mode', FALSE),
-    '#description' => t('If Strict mode is Enabled, then Drupal will reject unsigned or unencrypted messages if it expects them signed or encrypted. Also will reject the messages if not strictly follow the SAML standard: Destination, NameId, Conditions ... are validated too.'),
+    '#description' => t('If Strict mode is Enabled, then Drupal will reject unsigned or unencrypted messages if it expects them signed or encrypted. Also it will reject the messages if they do not strictly follow the SAML standard: Destination, NameId, Conditions ... are validated too.'),
     '#required' => FALSE
   );
 
@@ -245,7 +241,25 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_nameid_encrypted'] = array(
+  $form['saml_advanced_settings']['saml_advanced_settings_nameid_format'] = array(
+    '#type' => 'textfield',
+    '#title' => t('NameId Format'),
+    '#default_value' => variable_get('saml_advanced_settings_nameid_format', 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'),
+    '#description' => t('Set the NameId format that the Service Provider and Identity Provider will use. If not provided, \'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress\' will be used.'),
+    '#required' => FALSE
+  );
+
+  // SIGNING/ENCRYPTION SETTINGS
+  $form['saml_signing_encryption_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('SIGNING/ENCRYPTION SETTINGS')
+  );
+
+  $form['saml_signing_encryption_settings']['info'] = array(
+    '#markup' => t('<p>If signing/encryption is enabled, then a x509 cert and private key for the SP must be provided. There are two ways to supply the certificate and key:</p><p>1. Store them as files named sp.key and sp.crt in the \'certs\' folder of this Drupal module (be sure that the folder is protected and not exposed to the Internet).<br>2. Paste the certificate and key text in the corresponding textareas (review any database security issues as to limit the exposure of the key).</p><p><strong>Please be aware: if you encrypt the entire SAML Assertion, this module will not be able to decrypt attributes. Much of the functionality of this module depends on attributes (auto-provisioning, role sync, etc.). If you can live without encrypting the entire SAML Assertion, your attributes will work and additional security can be implemented by encrypting the NameId and enforcing signed requests/responses.</strong></p>')
+  );
+
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_nameid_encrypted'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Encrypt nameID</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_nameid_encrypted', FALSE),
@@ -253,7 +267,7 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_authn_request_signed'] = array(
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_authn_request_signed'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Sign AuthnRequest</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_authn_request_signed', FALSE),
@@ -261,7 +275,7 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_logout_request_signed'] = array(
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_logout_request_signed'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Sign LogoutRequest</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_logout_request_signed', FALSE),
@@ -269,7 +283,7 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_logout_response_signed'] = array(
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_logout_response_signed'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Sign LogoutResponse</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_logout_response_signed', FALSE),
@@ -277,7 +291,7 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['advanced_settings_want_message_signed'] = array(
+  $form['saml_signing_encryption_settings']['advanced_settings_want_message_signed'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Reject Unsigned Messages</strong>'),
     '#default_value' => variable_get('advanced_settings_want_message_signed', FALSE),
@@ -285,7 +299,7 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_want_assertion_signed'] = array(
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_want_assertion_signed'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Reject unsigned saml:Assertion received</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_want_assertion_signed', FALSE),
@@ -293,7 +307,7 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_want_assertion_encrypted'] = array(
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_want_assertion_encrypted'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Reject Unencrypted Assertions</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_want_assertion_encrypted', FALSE),
@@ -301,19 +315,19 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_sp_x509cert'] = array(
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_sp_x509cert'] = array(
     '#type' => 'textarea',
     '#title' => t('Service Provider X.509 Certificate'),
     '#default_value' => variable_get('saml_advanced_settings_sp_x509cert', ''),
-    '#description' => t('Public x509 certificate of the SP. Leave this field empty if you gonna provide the private key by the sp.crt'),
+    '#description' => t('Public x509 certificate of the SP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. Leave this field empty if you have added sp.crt to the certs folder of this module.'),
     '#required' => FALSE
   );
 
-  $form['saml_advanced_settings']['saml_advanced_settings_sp_privatekey'] = array(
+  $form['saml_signing_encryption_settings']['saml_advanced_settings_sp_privatekey'] = array(
     '#type' => 'textarea',
     '#title' => t('Service Provider Private Key'),
     '#default_value' => variable_get('saml_advanced_settings_sp_privatekey', ''),
-    '#description' => t('Private Key of the SP. Leave this field empty if you gonna provide the private key by the sp.key'),
+    '#description' => t('Private Key of the SP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. Leave this field empty if have added sp.key to the certs folder of this module.'),
     '#required' => FALSE
   );
 

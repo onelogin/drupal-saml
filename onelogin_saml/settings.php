@@ -13,7 +13,7 @@ $settings = array (
     'singleLogoutService' => array (
       'url' => url('onelogin_saml/sls', array('absolute' => true)),
     ),
-    'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+    'NameIDFormat' => variable_get('saml_advanced_settings_nameid_format', 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'),
     'x509cert' => variable_get('saml_advanced_settings_sp_x509cert', ''),
     'privateKey' => variable_get('saml_advanced_settings_sp_privatekey', ''),
   ),
