@@ -25,7 +25,7 @@ function onelogin_saml_form() {
   );
 
   $form['saml_onelogin']['info'] = array(
-    '#markup' => t('Configure here your SAML SP. Once configured, you can access to <a target="_blank" href="'.url('onelogin_saml/metadata', array('relative' => TRUE)).'">its metadata</a><br><a target="_blank" href="https://onelogin.zendesk.com/hc/en-us/articles/201173604-Configuring-SAML-for-Drupal">Find here more information</a>.')
+    '#markup' => t('Configure your SAML Service Provider below. Once configured, you can access the metadata <a target="_blank" href="'.url('onelogin_saml/metadata', array('relative' => TRUE)).'">here</a>.<br>Further information for OneLogin customers can be found <a target="_blank" href="https://onelogin.zendesk.com/hc/en-us/articles/201173604-Configuring-SAML-for-Drupal">here</a>.')
   );
 
   // IDENTITY PROVIDER SETTINGS
@@ -35,7 +35,7 @@ function onelogin_saml_form() {
   );
 
   $form['saml_idp']['info'] = array(
-    '#markup' => t('<p>Set here some info related to the IdP that will be connected with our Drupal. You can find this values at the Onelogin\'s platform in the Drupal App at the Single Sign-On tab</p>')
+    '#markup' => t('<p>Add information regarding your IdP.</p>')
   );
 
   $form['saml_idp']['saml_idp_entityid'] = array(
@@ -50,7 +50,7 @@ function onelogin_saml_form() {
     '#type' => 'textfield',
     '#title' => t('Single Sign On Service Url'),
     '#default_value' => variable_get('saml_idp_sso', ''),
-    '#description' => t('SSO endpoint info of the IdP. URL target of the IdP where the SP will send the Authentication Request. ("SAML 2.0 Endpoint (HTTP)")'),
+    '#description' => t('URL target of the IdP where the SP will send the Authentication Request. If your IdP has multiple URL targets, the one that uses the HTTP Redirect Binding should be used here. ("SAML 2.0 Endpoint (HTTP)")'),
     '#required' => TRUE
   );
 
@@ -66,7 +66,7 @@ function onelogin_saml_form() {
     '#type' => 'textarea',
     '#title' => t('X.509 Certificate'),
     '#default_value' => variable_get('saml_idp_x509cert', ''),
-    '#description' => t('Public x509 certificate of the IdP. ("X.509 certificate")'),
+    '#description' => t('Public x509 certificate of the IdP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. ("X.509 certificate")'),
     '#required' => TRUE
   );
 
