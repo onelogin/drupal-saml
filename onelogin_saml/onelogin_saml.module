@@ -13,7 +13,7 @@ require_once 'functions.php';
 function onelogin_saml_help($path, $arg) {
   switch ($path) {
     case "admin/help#onelogin_saml":
-      return '<p>'.  t("Allows Drupal to function as a SAML Service Provider. This means that users can authenticate to Drupal (without a username or password) via OneLogin or other SAML IDP (Identity Provider)") .'</p>';
+      return '<p>'.  t("Allows Drupal to function as a SAML Service Provider. This means that users can authenticate to Drupal (without a username or password) via OneLogin or a third party SAML Identity Provider (IdP)") .'</p>';
       break;
    }
 }
@@ -26,7 +26,7 @@ function onelogin_saml_menu(){
 
   $items['admin/config/people/onelogin_saml'] = array(
     'title' => 'Configure OneLogin SAML',
-    'description' => 'This SAML plugin eliminates passwords and allows you to authenticate Drupal users against your existing Active Directory or LDAP server as well increase security using YubiKeys or VeriSign VIP Access via OneLogin. OneLogin is pre-integrated with thousands of apps and handles all of your SSO needs in the cloud and behind the firewall.',
+    'description' => 'This SAML plugin allows you to authenticate Drupal users against OneLogin or a third party SAML Identity Provider (IdP). OneLogin is pre-integrated with thousands of apps and handles all of your SSO needs in the cloud and behind the firewall. OneLogin also offers increased security using YubiKeys or VeriSign VIP Access.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('onelogin_saml_form'),
     'access arguments' => array('config saml'),
@@ -75,6 +75,31 @@ function onelogin_saml_menu(){
 }
 
 /**
+ * * Implements hook_menu_alter()
+ *  */
+function onelogin_saml_menu_alter(&$items) {
+	$items['user/%user/password']['access callback'] = onelogin_saml_password_tab_disabled;
+}
+
+function onelogin_saml_password_tab_disabled($account) {
+	$made_sso_login = isset($_COOKIE['Drupal_visitor_drupal_saml_login']) && $_COOKIE['Drupal_visitor_drupal_saml_login'];
+	if ($made_sso_login) {
+		// Check if user has the administrator role
+		global $user;
+		if (in_array('administrator', $user->roles)) {
+			$saml_admin = TRUE;
+		}
+		// If the password tab is disabled in the module settings and the user is NOT an admin, hide the password tab.
+		$password_tab_disabled = variable_get('saml_options_password_tab_disabled', FALSE);
+		if ($password_tab_disabled && !$saml_admin) {
+			return FALSE;
+		}
+	}
+	// In all other cases, show the password tab.
+	return TRUE;
+}
+
+/**
  * * Implements hook_permission()
  *  */
 function onelogin_saml_permission(){
@@ -91,12 +116,12 @@ function onelogin_saml_permission(){
  */
 function onelogin_saml_user_logout($account) {
   $enable_slo = variable_get('saml_options_slo', FALSE);
-  $made_sso_login = isset($_COOKIE['drupal_saml_login']) && $_COOKIE['drupal_saml_login'];
+  $made_sso_login = isset($_COOKIE['Drupal_visitor_drupal_saml_login']) && $_COOKIE['Drupal_visitor_drupal_saml_login'];
   if ($enable_slo && $made_sso_login) {
     onelogin_saml_slo();
   }
-  else if ($made_sso_login) {
-    setcookie('drupal_saml_login', 0, time() + 3600);
+  if ($made_sso_login) {
+		setcookie('Drupal.visitor.drupal_saml_login', '', 1, '/');
   }
 }
 
@@ -146,6 +171,37 @@ function _onelogin_saml_user_login_form_alter(&$form, &$form_state) {
     }
   }
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function onelogin_saml_form_alter(&$form, &$form_state, $form_id) {
+	if ($form_id === 'user_profile_form') {
+		$made_sso_login = isset($_COOKIE['Drupal_visitor_drupal_saml_login']) && $_COOKIE['Drupal_visitor_drupal_saml_login'];
+		if ($made_sso_login) {
+			// Check if user has the administrator role
+			global $user;
+			if (in_array('administrator', $user->roles)) {
+				$saml_admin = TRUE;
+			}
+			// If the disable current password fields setting is set in the module and the user is NOT an admin, hide the fields.
+			$current_pass_disabled = variable_get('saml_options_current_pass_disabled', FALSE);
+		  if ($current_pass_disabled && !$saml_admin) {
+		    // searches the #validate array for the current_pass validation function, and removes it
+		    $key = array_search('user_validate_current_pass', $form['#validate']);
+		    if ($key !== FALSE) {
+		      unset($form['#validate'][$key]);
+		    }
+		    // hide the current password fields
+		    hide($form['account']['pass']);
+		    hide($form['account']['current_pass_required_values']);
+		    hide($form['account']['current_pass']);
+		  }
+		}
+	}
+}
+
+
 
 /**
  * Implements hook_requirements().

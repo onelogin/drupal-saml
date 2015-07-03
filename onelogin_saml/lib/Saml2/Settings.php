@@ -296,7 +296,7 @@ class OneLogin_Saml2_Settings
             $this->_security['nameIdEncrypted'] = false;
         }
         if (!isset($this->_security['requestedAuthnContext'])) {
-            $this->_security['requestedAuthnContext'] = true;
+            $this->_security['requestedAuthnContext'] = false;
         }
 
         // sign provided

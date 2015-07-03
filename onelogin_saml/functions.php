@@ -1,6 +1,11 @@
 <?php
 
 function onelogin_saml_sso() {
+  // If a user initiates a login while they are already logged in, simply send them to their profile.
+  if (user_is_logged_in() && !user_is_anonymous()) {
+	global $user;
+	drupal_goto('user/' . $user->uid);
+  }
   $auth = initialize_saml();
   if (isset($_GET['destination'])) {
     $target = $_GET['destination'];
@@ -25,11 +30,11 @@ function onelogin_saml_slo() {
 }
 
 function onelogin_saml_acs() {
+  global $user;
 
+  // If a user initiates a login while they are already logged in, simply send them to their profile.
   if (user_is_logged_in() && !user_is_anonymous()) {
-    global $user;
-    drupal_set_message("User ". $user->mail ." already logged in.", 'status', FALSE);
-    drupal_goto('');
+	drupal_goto('user/' . $user->uid);
   }
   else if (isset($_POST['SAMLResponse']) && !empty($_POST['SAMLResponse'])){
     $auth = initialize_saml();
@@ -48,11 +53,7 @@ function onelogin_saml_acs() {
     drupal_goto('');
   }
 
-  if (isset($_POST['RelayState'])) {
-    drupal_goto($_POST['RelayState']);
-  } else {
-    drupal_goto('');
-  }
+  drupal_goto('user/' . $user->uid);
 }
 
 function onelogin_saml_sls() {
@@ -201,7 +202,7 @@ function onelogin_saml_auth($auth) {
       }
     }
     user_login_finalize($form_state);
-    setcookie('drupal_saml_login', 1, time() + 360000);
+	user_cookie_save(array('drupal_saml_login'=>'1'));
 
   } else if ($autocreate) {
     $fields = array(
@@ -222,7 +223,7 @@ function onelogin_saml_auth($auth) {
       $GLOBALS['user'] = $user;
       $form_state['uid'] = $user->uid;
       user_login_finalize($form_state);
-      setcookie('drupal_saml_login', 1, time() + 360000);
+	  user_cookie_save(array('drupal_saml_login'=>'1'));
     }
     catch (Exception $e) {
       return FALSE;

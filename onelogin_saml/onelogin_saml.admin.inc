@@ -25,7 +25,7 @@ function onelogin_saml_form() {
   );
 
   $form['saml_onelogin']['info'] = array(
-    '#markup' => t('Configure here your SAML SP. Once configured, you can access to <a target="_blank" href="'.url('onelogin_saml/metadata', array('relative' => TRUE)).'">its metadata</a><br><a target="_blank" href="https://onelogin.zendesk.com/hc/en-us/articles/201173604-Configuring-SAML-for-Drupal">Find here more information</a>.')
+    '#markup' => t('Configure your SAML Service Provider below. Once configured, you can access the metadata <a target="_blank" href="'.url('onelogin_saml/metadata', array('relative' => TRUE)).'">here</a>.<br>Further information for OneLogin customers can be found <a target="_blank" href="https://onelogin.zendesk.com/hc/en-us/articles/201173604-Configuring-SAML-for-Drupal">here</a>.')
   );
 
   // IDENTITY PROVIDER SETTINGS
@@ -35,7 +35,7 @@ function onelogin_saml_form() {
   );
 
   $form['saml_idp']['info'] = array(
-    '#markup' => t('<p>Set here some info related to the IdP that will be connected with our Drupal. You can find this values at the Onelogin\'s platform in the Drupal App at the Single Sign-On tab</p>')
+    '#markup' => t('<p>Add information regarding your IdP.</p>')
   );
 
   $form['saml_idp']['saml_idp_entityid'] = array(
@@ -50,7 +50,7 @@ function onelogin_saml_form() {
     '#type' => 'textfield',
     '#title' => t('Single Sign On Service Url'),
     '#default_value' => variable_get('saml_idp_sso', ''),
-    '#description' => t('SSO endpoint info of the IdP. URL target of the IdP where the SP will send the Authentication Request. ("SAML 2.0 Endpoint (HTTP)")'),
+    '#description' => t('URL target of the IdP where the SP will send the Authentication Request. If your IdP has multiple URL targets, the one that uses the HTTP Redirect Binding should be used here. ("SAML 2.0 Endpoint (HTTP)")'),
     '#required' => TRUE
   );
 
@@ -66,7 +66,7 @@ function onelogin_saml_form() {
     '#type' => 'textarea',
     '#title' => t('X.509 Certificate'),
     '#default_value' => variable_get('saml_idp_x509cert', ''),
-    '#description' => t('Public x509 certificate of the IdP. ("X.509 certificate")'),
+    '#description' => t('Public x509 certificate of the IdP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. ("X.509 certificate")'),
     '#required' => TRUE
   );
 
@@ -169,29 +169,45 @@ function onelogin_saml_form() {
     '#required' => FALSE
   );
 
-  // CUSTOMIZE LINKS
-  $form['saml_customize_links'] = array(
+  // USER EXPERIENCE
+  $form['saml_user_experience'] = array(
     '#type' => 'fieldset',
-    '#title' => t('CUSTOMIZE LINKS')
+    '#title' => t('USER EXPERIENCE')
   );
 
-  $form['saml_customize_links']['info'] = array(
-    '#markup' => t('<p>When we enable the SAML SSO to be integrated with a IdP some Drupal links as \'Create new account\' or \'Request new password\' have no sense. Set here new urls in order to redirect the user to those url when executing those actions.</p>')
+  $form['saml_user_experience']['info'] = array(
+    '#markup' => t('<p>When implementing SSO, our users may become confused with menus and links that allow them to manage a local Drupal password or request a new account. These options allow you to customize the experience for SAML users with the hopes of avoiding some of the confusion.</p>')
   );
 
-  $form['saml_customize_links']['saml_create_new_account'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Create new account'),
-    '#default_value' => variable_get('saml_create_new_account', ''),
-    '#description' => t('Enable it when your are debugging the SAML workflow. Errors and Warnigs will be showed.'),
+  $form['saml_user_experience']['saml_options_current_pass_disabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('<strong>Disable current password field on user profile page.</strong>'),
+    '#default_value' => variable_get('saml_options_current_pass_disabled', FALSE),
+    '#description' => t('<p>You may wish to limit a user from creating and managing a Drupal password. The user profile form includes a current password field that is required as validation in order to update certain user profile fields (such as email address). If the user does not have a Drupal password, this will get in the way. This option disables the field for users who have logged in via SAML. Users with the Administrator role are exempt.</p>'),
     '#required' => FALSE
   );
 
-  $form['saml_customize_links']['saml_request_new_password'] = array(
+  $form['saml_user_experience']['saml_options_password_tab_disabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('<strong>Disable user password tab and related page.</strong>'),
+    '#default_value' => variable_get('saml_options_password_tab_disabled', FALSE),
+    '#description' => t('<p>You may wish to limit a user from creating and managing a Drupal password. This option disables the menu tabs associated with the user password page. This option disables the password page for users who have logged in via SAML. Users with the Administrator role are exempt.</p>'),
+    '#required' => FALSE
+  );
+
+  $form['saml_user_experience']['saml_create_new_account'] = array(
     '#type' => 'textfield',
-    '#title' => t('Request new password'),
+    '#title' => t('Customize the Create new account link.'),
+    '#default_value' => variable_get('saml_create_new_account', ''),
+    '#description' => t('Depending on your Drupal implementation, you may allow requests for new accounts from the Drupal login page. Rather than using Drupal\'s request form, you can direct users to your company\'s account request form.'),
+    '#required' => FALSE
+  );
+
+  $form['saml_user_experience']['saml_request_new_password'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Customize the Request new password link.'),
     '#default_value' => variable_get('saml_request_new_password', ''),
-    '#description' => t('Enable it when your are debugging the SAML workflow. Errors and Warnigs will be showed.'),
+    '#description' => t('If you have enabled the Request new password link in Drupal, a SSO user could click the link and go through the process believing that their SSO account password is being changed. In reality this would only change their local Drupal password. To avoid this confusion you can direct users to your company\'s password management system.'),
     '#required' => FALSE
   );
 
