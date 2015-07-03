@@ -119,9 +119,11 @@ function onelogin_saml_user_logout($account) {
   $made_sso_login = isset($_COOKIE['Drupal_visitor_drupal_saml_login']) && $_COOKIE['Drupal_visitor_drupal_saml_login'];
   if ($enable_slo && $made_sso_login) {
     onelogin_saml_slo();
-  }
-  if ($made_sso_login) {
+  } else if ($made_sso_login) {
+		session_destroy();
 		setcookie('Drupal.visitor.drupal_saml_login', '', 1, '/');
+		$saml_logout_link = variable_get('saml_logout_link', '');
+		drupal_goto($saml_logout_link);
   }
 }
 
