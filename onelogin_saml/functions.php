@@ -89,14 +89,24 @@ function onelogin_saml_auth($auth) {
   $username = '';
   $email = '';
 
+  // Get the NameId.
+  $nameId = $auth->getNameId();
+
+  if (empty($nameId)) {
+  	drupal_set_message("A NameId could not be found. Please supply a NameId in your SAML Response.", 'error', FALSE);
+  	drupal_goto();	
+  }
+
+  // Get SAML attributes
   $attrs = $auth->getAttributes();
-  if (empty($attrs)) {
-    $email = $auth->getNameId();
-    $username = str_replace('@', '.', $email);
-  } else {
+
+  $usernameFromEmail = variable_get('saml_options_username_from_email', FALSE);
+
+  if (!empty($attrs)) {
     $usernameMapping = variable_get('saml_attr_mapping_username');
     $mailMapping =  variable_get('saml_attr_mapping_email');
 
+    // Try to get $email and $username from attributes of the SAML Response
     if (!empty($usernameMapping) && isset($attrs[$usernameMapping]) && !empty($attrs[$usernameMapping][0])){
       $username = $attrs[$usernameMapping][0];
     }
@@ -105,13 +115,21 @@ function onelogin_saml_auth($auth) {
     }
   }
 
+  // If there are attrs but the mail is in NameID try to obtain it
+  if (empty($email) && strpos($nameId, '@')) {
+    $email = $nameId;
+  }
+
+  if (empty($username) && $usernameFromEmail) {
+    $username = str_replace('@', '.', $email);
+  }
+
   $matcher = variable_get('saml_options_account_matcher');
   if ($matcher == 'username') {
     if (empty($username)) {
       drupal_set_message("Username value not found on the SAML Response. Username was selected as the account matcher field. Review at the settings the username mapping and be sure that the IdP provides this value", 'error', FALSE);
       drupal_goto();
     }
-
     // Query for active users given an usermail.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'user')
@@ -123,7 +141,6 @@ function onelogin_saml_auth($auth) {
       drupal_set_message("Email value not found on the SAML Response. Email was selected as the account matcher field. Review at the settings the username mapping and be sure that the IdP provides this value", 'error', FALSE);
       drupal_goto();
     }
-
     // Query for active users given an e-mail address.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'user')
@@ -131,7 +148,6 @@ function onelogin_saml_auth($auth) {
           ->propertyCondition('mail', $email);
   }
 
-  $autocreate = variable_get('saml_options_autocreate', FALSE);
   $syncroles = variable_get('saml_options_syncroles', FALSE);
 
   $roles = array();
@@ -202,9 +218,16 @@ function onelogin_saml_auth($auth) {
       }
     }
     user_login_finalize($form_state);
-	user_cookie_save(array('drupal_saml_login'=>'1'));
+	  user_cookie_save(array('drupal_saml_login'=>'1'));
 
   } else if ($autocreate) {
+
+    // If auto-privisioning is enabled but there are no required attributes, we need to stop.
+    if (empty($email) || empty($username)) {
+      drupal_set_message("Auto-provisioning accounts requires a username and email address. Please supply both in your SAML response.", 'error', FALSE);
+      drupal_goto();
+    }
+
     $fields = array(
       'name' => $username,
       'mail' => $email,
@@ -223,7 +246,7 @@ function onelogin_saml_auth($auth) {
       $GLOBALS['user'] = $user;
       $form_state['uid'] = $user->uid;
       user_login_finalize($form_state);
-	  user_cookie_save(array('drupal_saml_login'=>'1'));
+	    user_cookie_save(array('drupal_saml_login'=>'1'));
     }
     catch (Exception $e) {
       return FALSE;
