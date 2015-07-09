@@ -88,6 +88,7 @@ function onelogin_saml_metadata() {
 function onelogin_saml_auth($auth) {
   $username = '';
   $email = '';
+  $autocreate = variable_get('saml_options_autocreate', FALSE);
 
   // Get the NameId.
   $nameId = $auth->getNameId();
