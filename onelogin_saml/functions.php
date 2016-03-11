@@ -240,6 +240,8 @@ function onelogin_saml_auth($auth) {
 
     if (!empty($roles)) {
       $fields['roles'] = $roles;
+    } else {
+      $fields['roles'] = array(DRUPAL_AUTHENTICATED_RID => 'authenticated user');
     }
 
     try {
