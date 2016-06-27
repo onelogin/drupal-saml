@@ -1,12 +1,12 @@
 {
     "php-saml": {
-        "version": "2.4.0",
-        "released": "13/03/2015"
+        "version": "2.9.0",
+        "released": "27/06/2016"
     },
     "plugin": {
         "app": "drupal",
         "name": "onelogin-saml",
-        "version": "2.2.3",
-        "released": "03/07/2015"
+        "version": "2.2.4",
+        "released": "27/06/2016"
     }
 }
