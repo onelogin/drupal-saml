@@ -25,7 +25,7 @@ function onelogin_saml_form() {
   );
 
   $form['saml_onelogin']['info'] = array(
-    '#markup' => t('Configure your SAML Service Provider below. Once configured, you can access the metadata <a target="_blank" href="'.url('onelogin_saml/metadata', array('relative' => TRUE)).'">here</a>.<br>Further information for OneLogin customers can be found <a target="_blank" href="https://onelogin.zendesk.com/hc/en-us/articles/201173604-Configuring-SAML-for-Drupal">here</a>.')
+    '#markup' => t('Configure your SAML Service Provider below. Once configured, you can access the metadata <a target="_blank" href="'.url('onelogin_saml/metadata', array('absolute' => true)).'">here</a>.<br>Further information for OneLogin customers can be found <a target="_blank" href="https://onelogin.zendesk.com/hc/en-us/articles/201173604-Configuring-SAML-for-Drupal">here</a>.')
   );
 
   // IDENTITY PROVIDER SETTINGS
