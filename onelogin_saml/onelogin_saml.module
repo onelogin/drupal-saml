@@ -149,7 +149,7 @@ function _onelogin_saml_user_login_form_alter(&$form, &$form_state) {
     // Add a "Log in using SAML" link to the user-login form.
     $items = array();
     $items[] = array(
-      'data' => l(t('Log in using SAML'), url('onelogin_saml/sso', array('relative' => TRUE)), array('external' => TRUE)), 
+      'data' => l(t('Log in using SAML'), url('onelogin_saml/sso', array('absolute' => true)), array('external' => TRUE)), 
       'class' => array('saml-link'),
     );
 
