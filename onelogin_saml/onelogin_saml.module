@@ -78,7 +78,7 @@ function onelogin_saml_menu(){
  * * Implements hook_menu_alter()
  *  */
 function onelogin_saml_menu_alter(&$items) {
-	$items['user/%user/password']['access callback'] = onelogin_saml_password_tab_disabled;
+	$items['user/%user/password']['access callback'] = 'onelogin_saml_password_tab_disabled';
 }
 
 function onelogin_saml_password_tab_disabled($account) {
