@@ -206,7 +206,8 @@ function onelogin_saml_auth($auth) {
   if ($result && $user = user_load(key($result['user']))) {
     $GLOBALS['user'] = $user;
     $form_state['uid'] = $user->uid;
-
+    //If a user has previously logged in, we pull the roles it already has
+    $roles = $user->roles;
     if (!empty($roles)) {
       try {
         $fields = array(
