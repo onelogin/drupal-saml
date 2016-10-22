@@ -52,7 +52,13 @@ function onelogin_saml_acs() {
     drupal_set_message("No SAML Response found.", 'error', FALSE);
     drupal_goto('');
   }
-
+  /*When a user logins using OneLogin and the URL has a destination parameter in it, 
+  * we redirect them to the page after logging in
+  * Works because we append destination parameter to OneLogin SAML url 
+  */
+  if(isset($_POST['RelayState'])){
+    drupal_goto($_POST['RelayState']);
+  }
   drupal_goto('user/' . $user->uid);
 }
 
@@ -206,7 +212,8 @@ function onelogin_saml_auth($auth) {
   if ($result && $user = user_load(key($result['user']))) {
     $GLOBALS['user'] = $user;
     $form_state['uid'] = $user->uid;
-
+    //If a user has previously logged in, we pull the roles it already has
+    $roles = $user->roles;
     if (!empty($roles)) {
       try {
         $fields = array(

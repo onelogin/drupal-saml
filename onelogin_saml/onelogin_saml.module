@@ -148,8 +148,9 @@ function _onelogin_saml_user_login_form_alter(&$form, &$form_state) {
   if ($showSamlLink) {
     // Add a "Log in using SAML" link to the user-login form.
     $items = array();
+    //Pass on a destination parameter to OneLogin. The OneLogin ldp will pass it back to us using RelayState
     $items[] = array(
-      'data' => l(t('Log in using SAML'), url('onelogin_saml/sso', array('absolute' => true)), array('external' => TRUE)), 
+      'data' => l(t('Log in using SAML'), url('onelogin_saml/sso', array('absolute' => true)), array('external' => TRUE),array('query'=>array('destination'=>drupal_get_destination()))), 
       'class' => array('saml-link'),
     );
 
