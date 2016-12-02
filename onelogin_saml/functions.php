@@ -34,7 +34,7 @@ function onelogin_saml_acs() {
 
   // If a user initiates a login while they are already logged in, simply send them to their profile.
   if (user_is_logged_in() && !user_is_anonymous()) {
-	drupal_goto('user/' . $user->uid);
+	  drupal_goto('');
   }
   else if (isset($_POST['SAMLResponse']) && !empty($_POST['SAMLResponse'])){
     $auth = initialize_saml();
@@ -44,16 +44,15 @@ function onelogin_saml_acs() {
     $errors = $auth->getErrors();
     if (!empty($errors)) {
       drupal_set_message("There was at least one error processing the SAML Response".implode("<br>", $errors), 'error', FALSE);
-      drupal_goto('');
+    } else {
+      onelogin_saml_auth($auth);
     }
-    onelogin_saml_auth($auth);
   }
   else {
     drupal_set_message("No SAML Response found.", 'error', FALSE);
-    drupal_goto('');
   }
 
-  drupal_goto('user/' . $user->uid);
+  drupal_goto('');
 }
 
 function onelogin_saml_sls() {
@@ -250,6 +249,7 @@ function onelogin_saml_auth($auth) {
       $form_state['uid'] = $user->uid;
       user_login_finalize($form_state);
 	    user_cookie_save(array('drupal_saml_login'=>'1'));
+      drupal_goto('user/' . $user->uid.'/edit');
     }
     catch (Exception $e) {
       return FALSE;
@@ -257,7 +257,6 @@ function onelogin_saml_auth($auth) {
   }
   else {
     drupal_set_message("User '".($matcher == 'username'? $username : $email). "' not found.", 'error', FALSE);
-    drupal_goto();
   }
 }
 
