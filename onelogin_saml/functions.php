@@ -42,7 +42,12 @@ function onelogin_saml_acs() {
 
     $errors = $auth->getErrors();
     if (!empty($errors)) {
-      drupal_set_message("There was at least one error processing the SAML Response".implode("<br>", $errors), 'error', FALSE);
+      $settings = $auth->getSettings();
+      $debugError = '';
+      if ($settings->isDebugActive()) {
+        $debugError = "<br>".$auth->getLastErrorReason();
+      }
+      drupal_set_message("There was at least one error processing the SAML Response<br>".implode("<br>", $errors).$debugError, 'error', FALSE);
     } else {
       onelogin_saml_auth($auth);
     }
@@ -75,7 +80,6 @@ function onelogin_saml_sls() {
 
 function onelogin_saml_metadata() {
   $auth = initialize_saml();
-  $auth = new Onelogin_Saml2_Auth($settings);
   $settings = $auth->getSettings();
   $metadata = $settings->getSPMetadata();
   header('Content-Type: text/xml');
