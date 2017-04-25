@@ -1,16 +1,23 @@
 <?php
 
 function onelogin_saml_sso() {
-  // If a user initiates a login while they are already logged in, simply send them to their profile.
-  if (user_is_logged_in() && !user_is_anonymous()) {
-	drupal_goto('');
-  }
-  $auth = initialize_saml();
+
   if (isset($_GET['destination'])) {
     $target = $_GET['destination'];
   } else if (isset($_GET['returnTo'])) {
     $target = $_GET['returnTo'];
   }
+
+  // If a user initiates a login while they are already logged in, simply send them to desired place.
+  if (user_is_logged_in() && !user_is_anonymous()) {
+    if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE) {
+      drupal_goto($target);
+    } else {
+      drupal_goto('');
+    }
+  }
+
+  $auth = initialize_saml();
   if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE) {
     $auth->login($target);
   } else {
@@ -31,9 +38,21 @@ function onelogin_saml_slo() {
 function onelogin_saml_acs() {
   global $user;
 
+  if (isset($_POST['RelayState'])) {
+    $target = $_POST['RelayState'];
+  } else if (isset($_GET['returnTo'])) {
+    $target = $_GET['returnTo'];
+  } else if (isset($_GET['destination'])) {
+    $target = $_GET['destination'];
+  }
+
   // If a user initiates a login while they are already logged in, simply send them to their profile.
   if (user_is_logged_in() && !user_is_anonymous()) {
-	  drupal_goto('');
+    if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE && strpos($target, 'onelogin_saml/acs') === FALSE) {
+      drupal_goto($target);
+    } else {
+      drupal_goto('');
+    }
   }
   else if (isset($_POST['SAMLResponse']) && !empty($_POST['SAMLResponse'])){
     $auth = initialize_saml();
@@ -56,7 +75,11 @@ function onelogin_saml_acs() {
     drupal_set_message("No SAML Response found.", 'error', FALSE);
   }
 
-  drupal_goto('');
+  if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE && strpos($target, 'onelogin_saml/acs') === FALSE) {
+    drupal_goto($target);
+  } else {
+    drupal_goto('');
+  }
 }
 
 function onelogin_saml_sls() {
@@ -64,7 +87,7 @@ function onelogin_saml_sls() {
   $auth->processSLO();
   $errors = $auth->getErrors();
   if (empty($errors)) {
-      session_destroy();
+      @session_destroy();
   }
   else {
     $reason = $auth->getLastErrorReason();
@@ -96,8 +119,8 @@ function onelogin_saml_auth($auth) {
   $nameId = $auth->getNameId();
 
   if (empty($nameId)) {
-  	drupal_set_message("A NameId could not be found. Please supply a NameId in your SAML Response.", 'error', FALSE);
-  	drupal_goto();	
+    drupal_set_message("A NameId could not be found. Please supply a NameId in your SAML Response.", 'error', FALSE);
+    drupal_goto('');
   }
 
   // Get SAML attributes
@@ -131,7 +154,7 @@ function onelogin_saml_auth($auth) {
   if ($matcher == 'username') {
     if (empty($username)) {
       drupal_set_message("Username value not found on the SAML Response. Username was selected as the account matcher field. Review at the settings the username mapping and be sure that the IdP provides this value", 'error', FALSE);
-      drupal_goto();
+      drupal_goto('');
     }
     // Query for active users given an usermail.
     $query = new EntityFieldQuery();
@@ -221,7 +244,7 @@ function onelogin_saml_auth($auth) {
       }
     }
     user_login_finalize($form_state);
-	  user_cookie_save(array('drupal_saml_login'=>'1'));
+    user_cookie_save(array('drupal_saml_login'=>'1'));
 
   } else if ($autocreate) {
 
@@ -251,7 +274,7 @@ function onelogin_saml_auth($auth) {
       $GLOBALS['user'] = $user;
       $form_state['uid'] = $user->uid;
       user_login_finalize($form_state);
-	    user_cookie_save(array('drupal_saml_login'=>'1'));
+      user_cookie_save(array('drupal_saml_login'=>'1'));
       drupal_goto('user/' . $user->uid.'/edit');
     }
     catch (Exception $e) {
