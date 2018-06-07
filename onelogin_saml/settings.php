@@ -38,6 +38,7 @@ $settings = array (
     'wantMessagesSigned' => variable_get('advanced_settings_want_message_signed', false),
     'wantAssertionsSigned' => variable_get('saml_advanced_settings_want_assertion_signed', false),
     'wantAssertionsEncrypted' => variable_get('saml_advanced_settings_want_assertion_encrypted', false),
-    'relaxDestinationValidation' => true
+    'relaxDestinationValidation' => true,
+    'wantNameId' => false
   )
 );
