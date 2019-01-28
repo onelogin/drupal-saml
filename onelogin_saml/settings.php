@@ -39,6 +39,8 @@ $settings = array (
     'wantAssertionsSigned' => variable_get('saml_advanced_settings_want_assertion_signed', false),
     'wantAssertionsEncrypted' => variable_get('saml_advanced_settings_want_assertion_encrypted', false),
     'relaxDestinationValidation' => true,
-    'wantNameId' => false
+    'wantNameId' => false,
+    'wantXMLValidation' => true,
+    'lowercaseUrlencoding' => false
   )
 );

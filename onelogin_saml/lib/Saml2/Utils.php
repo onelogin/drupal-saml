@@ -37,6 +37,10 @@ class OneLogin_Saml2_Utils
      */
     private static $_baseurlpath;
 
+    /**
+     * @var string
+     */
+    private static $_protocolRegex = '@^https?://@i';
 
     /**
      * Translates any string. Accepts args
@@ -80,13 +84,19 @@ class OneLogin_Saml2_Utils
         assert('$dom instanceof DOMDocument');
         assert('is_string($xml)');
 
-        if (strpos($xml, '<!ENTITY') !== false) {
-            throw new Exception('Detected use of ENTITY in XML, disabled to prevent XXE/XEE attacks');
-        }
-
         $oldEntityLoader = libxml_disable_entity_loader(true);
+
         $res = $dom->loadXML($xml);
+
         libxml_disable_entity_loader($oldEntityLoader);
+
+        foreach ($dom->childNodes as $child) {
+            if ($child->nodeType === XML_DOCUMENT_TYPE_NODE) {
+                throw new Exception(
+                    'Detected use of DOCTYPE/ENTITY in XML, disabled to prevent XXE/XEE attacks'
+                );
+            }
+        }
 
         if (!$res) {
             return false;
@@ -296,8 +306,11 @@ class OneLogin_Saml2_Utils
             $url = self::getSelfURLhost() . $url;
         }
 
-        /* Verify that the URL is to a http or https site. */
-        $wrongProtocol = !preg_match('@^https?://@i', $url);
+        /**
+         * Verify that the URL matches the regex for the protocol.
+         * By default this will check for http and https
+         */
+        $wrongProtocol = !preg_match(self::$_protocolRegex, $url);
         $url = filter_var($url, FILTER_VALIDATE_URL);
         if ($wrongProtocol || empty($url)) {
             throw new OneLogin_Saml2_Error(
@@ -342,6 +355,16 @@ class OneLogin_Saml2_Utils
         header('Cache-Control: no-cache, must-revalidate');
         header('Location: ' . $url);
         exit();
+    }
+
+    /**
+     * @var $protocolRegex string
+     */
+    public static function setProtocolRegex($protocolRegex)
+    {
+        if (!empty($protocolRegex)) {
+            self::$_protocolRegex = $protocolRegex;
+        }
     }
 
     /**
