@@ -133,7 +133,7 @@ function onelogin_saml_form() {
     '#title' => t('Match Drupal account by'),
     '#default_value' => variable_get('saml_options_account_matcher', 'username'),
     '#options' => array('username', 'email'),
-    '#description' => t('Select what field will be used in order to find the user account. If you select the \'email\' fieldname remember to prevent that the user is able to change his mail in his profile.')
+    '#description' => t('Select what field will be used in order to find the user account. If you select the \'email\' field name remember to prevent that the user is able to change his mail in his profile.')
   );
 
   // ATTRIBUTE MAPPING
@@ -237,7 +237,7 @@ function onelogin_saml_form() {
     '#type' => 'checkbox',
     '#title' => t('<strong>Debug Mode</strong>'),
     '#default_value' => variable_get('saml_advanced_settings_debug', FALSE),
-    '#description' => t('Enable it when you are debugging the SAML workflow. Errors and Warnigs will be showed.'),
+    '#description' => t('Enable it when you are debugging the SAML workflow. Errors and Warnings will be showed.'),
     '#required' => FALSE
   );
 
