@@ -44,7 +44,7 @@ function onelogin_saml_menu(){
   );
 
   $items['onelogin_saml/sso'] = array(
-    'title' => 'SAML SP-Iniiated SSO',
+    'title' => 'SAML SP-Initiated SSO',
     'page callback' => 'onelogin_saml_sso',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK
@@ -218,7 +218,7 @@ function onelogin_saml_requirements($phase) {
     $requirements['onelogin_saml_openssl'] = array(
       'value' => t('Not installed'),
       'severity' => REQUIREMENT_ERROR,
-      'description' => t('OneLogin SAML PHP Toolkit requires the use of the <a href="@openssl">Open SSL</a> to handling x509 certificates. see <a href="@php-saml">PHP SAML Toolkit</a> for dependency updates.', array('@openssl' => 'http://php.net/manual/en/book.openssl.php', '@php-saml' => 'https://github.com/onelogin/php-saml#dependences')),
+      'description' => t('OneLogin SAML PHP Toolkit requires the use of the <a href="@openssl">Open SSL</a> to handle x509 certificates. see <a href="@php-saml">PHP SAML Toolkit</a> for dependency updates.', array('@openssl' => 'http://php.net/manual/en/book.openssl.php', '@php-saml' => 'https://github.com/onelogin/php-saml#dependences')),
     );
   }
   else {
@@ -232,7 +232,7 @@ function onelogin_saml_requirements($phase) {
     $requirements['onelogin_saml_mcrypt'] = array(
       'value' => t('Not all features enabled'),
       'severity' => REQUIREMENT_WARNING,
-      'description' => t('Install <a href="@openssl">Mcrypt Library</a> and its php driver if you gonna handle encrypted data. (nameID, assertions).', array('@mcrypt' => 'http://php.net/manual/en/book.mcrypt.php')),
+      'description' => t('Install <a href="@openssl">Mcrypt Library</a> and its PHP driver if you gonna handle encrypted data. (nameID, assertions).', array('@mcrypt' => 'http://php.net/manual/en/book.mcrypt.php')),
     );
   }
   else {
@@ -246,7 +246,7 @@ function onelogin_saml_requirements($phase) {
     $requirements['onelogin_saml_gettext'] = array(
       'value' => t('Not all features enabled.'),
       'severity' => REQUIREMENT_WARNING,
-      'description' => t('Install <a href="@gettext">Gettext Library</a> and its php driver. It handles translations.', array('@gettext' => 'http://php.net/manual/en/book.gettext.php')),
+      'description' => t('Install <a href="@gettext">Gettext Library</a> and its PHP driver. It handles translations.', array('@gettext' => 'http://php.net/manual/en/book.gettext.php')),
     );
   }
   else {
